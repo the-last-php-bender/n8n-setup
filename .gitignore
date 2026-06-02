@@ -1,0 +1,6 @@
+# Ignore sensitive data and local database files
+.env
+postgres_data/
+n8n_data/
+*.log
+txt.txt
