@@ -18,15 +18,11 @@ services:
       - "${POSTGRES_PORT}:5432"
     networks:
       - job_lookup_network
-
-  redis:
-    image: redis:7-alpine
-    container_name: x_job_redis
-    restart: always
-    ports:
-      - "${REDIS_PORT}:6379"
-    networks:
-      - job_lookup_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   n8n:
     image: docker.n8n.io/n8nio/n8n:2.20.6
@@ -46,7 +42,8 @@ services:
       - TZ=Africa/Lagos
       - GENERIC_TIMEZONE=Africa/Lagos
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
       - job_lookup_network
     volumes:
